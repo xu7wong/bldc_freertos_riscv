@@ -21,32 +21,13 @@
 #include "mcpwm_foc.h"
 /* Global define */
 #define TASK1_TASK_PRIO     5
-#define TASK1_STK_SIZE      256
+#define TASK1_STK_SIZE      512
 #define TASK2_TASK_PRIO     5
-#define TASK2_STK_SIZE      256
+#define TASK2_STK_SIZE      512
 
 /* Global Variable */
 TaskHandle_t Task1Task_Handler;
 TaskHandle_t Task2Task_Handler;
-
-
-/*********************************************************************
- * @fn      GPIO_Toggle_INIT
- *
- * @brief   Initializes GPIOA.0/1
- *
- * @return  none
- */
-void GPIO_Toggle_INIT(void)
-{
-  GPIO_InitTypeDef  GPIO_InitStructure={0};
-
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-  GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
-  GPIO_Init(GPIOA, &GPIO_InitStructure);
-}
 
 /*********************************************************************
  * @fn      task1_task
@@ -62,10 +43,19 @@ void task1_task(void *pvParameters)
     while(1)
     {
         printf("task1 entry %ld\n", timer_milliseconds_elapsed_since(0));
-        //GPIO_SetBits(GPIOA, GPIO_Pin_0);
+        //for(uint8_t i = 0; i < ADC_TOTAL_CHANNELS/2; i++){
+            //ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+        //    vTaskDelay(1);
+        //}
+
+        LED1_ON();
         vTaskDelay(250);
-        //GPIO_ResetBits(GPIOA, GPIO_Pin_0);
-        //vTaskDelay(250);
+        LED1_OFF();
+        vTaskDelay(250);
+        printf("ADC 0~1 %d, %d\n",Get_ConversionVal2(ADC_Value[0]), Get_ConversionVal2(ADC_Value[1]));
+        //printf("ADC 0~3 %d, %d, %d, %d\n",Get_ConversionVal1(ADC_Value[0]), Get_ConversionVal1(ADC_Value[2]), Get_ConversionVal1(ADC_Value[4]), Get_ConversionVal1(ADC_Value[6]));
+       // printf("ADC 4~7 %d, %d, %d, %d\n",Get_ConversionVal1(ADC_Value[8]), Get_ConversionVal2(ADC_Value[1]), Get_ConversionVal2(ADC_Value[3]), Get_ConversionVal2(ADC_Value[5]));
+        //printf("ADC 8~9 %d, %d\n",Get_ConversionVal2(ADC_Value[7]), Get_ConversionVal2(ADC_Value[9]));
     }
 }
 
@@ -83,10 +73,10 @@ void task2_task(void *pvParameters)
     while(1)
     {
         //printf("task2 entry\n");
-        GPIO_ResetBits(GPIOA, GPIO_Pin_1);
+        //GPIO_ResetBits(GPIOE, GPIO_Pin_1);
         vTaskDelay(500);
-        GPIO_SetBits(GPIOA, GPIO_Pin_1);
-        vTaskDelay(500);
+        //GPIO_SetBits(GPIOE, GPIO_Pin_1);
+        //vTaskDelay(500);
     }
 }
 
@@ -106,7 +96,6 @@ int main(void)
 	printf("SystemClk:%d\n",SystemCoreClock);
 	printf("FreeRTOS Kernel Version:%s\n",tskKERNEL_VERSION_NUMBER);
 
-	GPIO_Toggle_INIT();
 	hw_init_gpio();
 	timer_init();
 	mcpwm_foc_init();
