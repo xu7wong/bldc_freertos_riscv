@@ -11,7 +11,8 @@
 static void timer_reinit(int f_zv){
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
-
+    TIM_DeInit(TIM1);
+    TIM_DeInit(TIM2);
     TIM1->CNT = 0;
     TIM2->CNT = 0;
 
@@ -117,14 +118,11 @@ void mcpwm_foc_init(){
     ADC_InitStructure.ADC_Pga = ADC_Pga_1;
 
     ADC_Init(ADC1, &ADC_InitStructure);
-    ADC_ExternalTrigConvCmd(ADC1, ENABLE);
+
+    //ADC_ExternalTrigConvCmd(ADC1, ENABLE);
     //ADC_ExternalTrigInjectedConvCmd(ADC1, ENABLE);
 
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_2, 1, ADC_SampleTime_7Cycles5 );
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 2, ADC_SampleTime_7Cycles5 );
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 3, ADC_SampleTime_7Cycles5 );
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_8, 4, ADC_SampleTime_7Cycles5 );
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_10, 5, ADC_SampleTime_7Cycles5 );
+
     ADC_DMACmd(ADC1, ENABLE);
     ADC_Cmd(ADC1, ENABLE);
 
@@ -147,11 +145,7 @@ void mcpwm_foc_init(){
 //    ADC_InitStructure.ADC_Pga = ADC_Pga_1;
 
     ADC_Init(ADC2, &ADC_InitStructure);
-    ADC_RegularChannelConfig(ADC2, ADC_Channel_3, 1, ADC_SampleTime_7Cycles5 );
-    ADC_RegularChannelConfig(ADC2, ADC_Channel_5, 2, ADC_SampleTime_7Cycles5 );
-    ADC_RegularChannelConfig(ADC2, ADC_Channel_7, 3, ADC_SampleTime_7Cycles5 );
-    ADC_RegularChannelConfig(ADC2, ADC_Channel_9, 4, ADC_SampleTime_7Cycles5 );
-    ADC_RegularChannelConfig(ADC2, ADC_Channel_11, 5, ADC_SampleTime_7Cycles5 );
+
 
     ADC_Cmd(ADC2, ENABLE);
 
@@ -164,6 +158,7 @@ void mcpwm_foc_init(){
 
     ADC_BufferCmd(ADC2, ENABLE);   //enable buffer
 
+    ADC_TempSensorVrefintCmd(ENABLE);
 
     DMA_InitTypeDef DMA_InitStructure={0};
     NVIC_InitTypeDef NVIC_InitStructure={0};
@@ -193,6 +188,9 @@ void mcpwm_foc_init(){
     //DMA_ITConfig( DMA1_Channel1, DMA_IT_TC | DMA_IT_HT | DMA_IT_TE, ENABLE );
     DMA_ITConfig( DMA1_Channel1, DMA_IT_TC, ENABLE );
     DMA_Cmd( DMA1_Channel1, ENABLE );
+
+
+    hw_setup_adc_channels();
 
     timer_reinit(25000);
 }

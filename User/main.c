@@ -12,7 +12,7 @@
  *@Note
  task1 and task2 alternate printing
 */
-
+#include <string.h>
 #include "debug.h"
 #include "FreeRTOS.h"
 #include "task.h"
@@ -52,10 +52,14 @@ void task1_task(void *pvParameters)
         vTaskDelay(250);
         LED1_OFF();
         vTaskDelay(250);
-        printf("ADC 0~1 %d, %d\n",Get_ConversionVal2(ADC_Value[0]), Get_ConversionVal2(ADC_Value[1]));
-        //printf("ADC 0~3 %d, %d, %d, %d\n",Get_ConversionVal1(ADC_Value[0]), Get_ConversionVal1(ADC_Value[2]), Get_ConversionVal1(ADC_Value[4]), Get_ConversionVal1(ADC_Value[6]));
-       // printf("ADC 4~7 %d, %d, %d, %d\n",Get_ConversionVal1(ADC_Value[8]), Get_ConversionVal2(ADC_Value[1]), Get_ConversionVal2(ADC_Value[3]), Get_ConversionVal2(ADC_Value[5]));
-        //printf("ADC 8~9 %d, %d\n",Get_ConversionVal2(ADC_Value[7]), Get_ConversionVal2(ADC_Value[9]));
+        //printf("ADC 0~1 %d, %d\n",Get_ConversionVal2(ADC_Value[0]), Get_ConversionVal2(ADC_Value[1]));
+        printf("ADC 0~3 %d, %d, %d, %d\n",Get_ConversionVal1(ADC_Value[0]), Get_ConversionVal1(ADC_Value[2]), Get_ConversionVal1(ADC_Value[4]), Get_ConversionVal1(ADC_Value[6]));
+        printf("ADC 4~7 %d, %d, %d, %d\n",Get_ConversionVal1(ADC_Value[8]), Get_ConversionVal2(ADC_Value[1]), Get_ConversionVal2(ADC_Value[3]), Get_ConversionVal2(ADC_Value[5]));
+        printf("ADC 8~9 %d, %d\n",Get_ConversionVal2(ADC_Value[7]), Get_ConversionVal2(ADC_Value[9]));
+
+        int32_t val_mv = (Get_ConversionVal2(ADC_Value[9])*3300/4096);
+
+        printf("mv-T-%d,%0dC\n",val_mv ,TempSensor_Volt_To_Temper(val_mv));
     }
 }
 
@@ -72,11 +76,13 @@ void task2_task(void *pvParameters)
 {
     while(1)
     {
+
         //printf("task2 entry\n");
         //GPIO_ResetBits(GPIOE, GPIO_Pin_1);
         vTaskDelay(500);
         //GPIO_SetBits(GPIOE, GPIO_Pin_1);
         //vTaskDelay(500);
+
     }
 }
 
@@ -95,9 +101,11 @@ int main(void)
 	USART_Printf_Init(115200);
 	printf("SystemClk:%d\n",SystemCoreClock);
 	printf("FreeRTOS Kernel Version:%s\n",tskKERNEL_VERSION_NUMBER);
+	timer_init();
 
 	hw_init_gpio();
-	timer_init();
+	hw_init_peripherals();
+
 	mcpwm_foc_init();
 	/* create two task */
     xTaskCreate((TaskFunction_t )task2_task,

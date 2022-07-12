@@ -7,10 +7,16 @@
 
 #ifndef VESC_HW_H_
 #define VESC_HW_H_
-#include "debug.h"
+#include "ch32v30x_conf.h"
 
 #define SYSTEM_CORE_CLOCK 144000000
 #define ADC_TOTAL_CHANNELS 10
+
+typedef enum
+{
+    BLE_AT = 0,
+    BLE_TRANSPARENT
+} BLEMode;
 
 extern uint16_t ADC_Value[ADC_TOTAL_CHANNELS];
 extern int16_t Calibrattion_Val1;
@@ -21,7 +27,11 @@ extern int16_t Calibrattion_Val2;
 #define LED2_ON() GPIO_ResetBits(GPIOE, GPIO_Pin_1)
 #define LED2_OFF() GPIO_SetBits(GPIOE, GPIO_Pin_1)
 
+#define BLE_AT_MODE() GPIO_ResetBits(GPIOE, GPIO_Pin_7)
+#define BLE_TRANSPARENT_MODE() GPIO_SetBits(GPIOE, GPIO_Pin_7)
+
 void hw_init_gpio(void);
+void hw_init_peripherals(void);
 void hw_setup_adc_channels(void);
 
 uint16_t Get_ConversionVal1(int16_t val);
