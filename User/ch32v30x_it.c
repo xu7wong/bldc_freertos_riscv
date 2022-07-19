@@ -13,6 +13,9 @@ void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void DMA1_Channel1_IRQHandler(void)   __attribute__((interrupt("WCH-Interrupt-fast")));
+//void DMA2_Channel10_IRQHandler(void)   __attribute__((interrupt("WCH-Interrupt-fast")));
+//void UART8_IRQHandler(void)   __attribute__((interrupt("WCH-Interrupt-fast")));
+
 /*********************************************************************
  * @fn      NMI_Handler
  *
@@ -40,7 +43,7 @@ void HardFault_Handler(void)
 //static volatile uint8_t debug = 0;
 void TIM2_IRQHandler(void)
 {
-  if(TIM_GetITStatus(TIM2, TIM_IT_CC2)!=RESET)
+  if(TIM_GetITStatus(TIM2, TIM_IT_CC2)==SET)
   {
       TIM_ClearITPendingBit(TIM2, TIM_IT_CC2);
       TIM_GenerateEvent(TIM1, TIM_EventSource_COM);
@@ -68,3 +71,27 @@ void DMA1_Channel1_IRQHandler()
 #endif
     }
 }
+//void DMA2_Channel10_IRHandler()
+//{
+//    if(DMA_GetITStatus(DMA2_IT_TC10)==SET ){
+//        DMA_ClearITPendingBit(DMA2_IT_TC10);
+//        BLE_TRANSPARENT_MODE();
+//    }
+//}
+//void UART8_IRQHandler(void){
+//    //if(USART_GetITStatus(UART8, USART_IT_IDLE)!=RESET){
+//
+//        if(USART_GetFlagStatus(UART8, USART_FLAG_IDLE)==SET){
+//            USART_ClearFlag(UART8, USART_FLAG_IDLE);
+//            USART_ITConfig(UART8, USART_IT_IDLE, DISABLE);
+//            ble_rx_buffer_index = 16;//128 - DMA_GetCurrDataCounter(DMA2_Channel11);
+//            //DMA_SetCurrDataCounter(DMA2_Channel11, 256);
+//        }
+//        //USART_ClearITPendingBit(UART8, USART_IT_IDLE);
+//
+//        //DMA_Cmd( DMA2_Channel11, DISABLE );
+//        //USART_ITConfig(UART8, USART_IT_IDLE, DISABLE);
+//        //ble_idle_flag = 1;//128 - DMA_GetCurrDataCounter(DMA2_Channel11);
+//
+//    //}
+//}

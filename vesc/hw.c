@@ -6,13 +6,26 @@
  */
 #include "hw.h"
 #include "timer.h"
+
+
+
+#include "ble.h"
+
 uint16_t ADC_Value[ADC_TOTAL_CHANNELS];
 int16_t Calibrattion_Val1 = 0;
 int16_t Calibrattion_Val2 = 0;
 
-static void ble_write(BLEMode mode, char *buf, int size);
-static int ble_read(BLEMode mode, char *buf, int size, uint32_t timeout);
+//static int ble_write(BLEMode mode, char *buf, int size);
+//static int ble_read(BLEMode mode, char *buf, int size, uint32_t timeout);
 
+
+//volatile uint8_t ble_rx_buffer_index = 0;
+//static uint8_t ble_tx_buffer_index = 0;
+
+//static uint16_t ble_rx_DMA_index_old = 0;
+//static uint16_t ble_rx_DMA_index_new = 0;
+
+//volatile uint8_t ble_idle_flag = 0;
 void hw_init_gpio(void){
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOA  | RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD | RCC_APB2Periph_GPIOE, ENABLE);
 
@@ -154,28 +167,16 @@ void hw_init_gpio(void){
     LED1_OFF();
     LED2_OFF();
 
+//    BLE_AT_MODE();
 }
 void hw_init_peripherals(void){
-    USART_InitTypeDef USART_InitStructure;
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART8, ENABLE);
-    USART_InitStructure.USART_BaudRate = 115200;
-    USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-    USART_InitStructure.USART_StopBits = USART_StopBits_1;
-    USART_InitStructure.USART_Parity = USART_Parity_No;
-    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-    USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
-    USART_Init(UART8, &USART_InitStructure);
-    USART_Cmd(UART8, ENABLE);
 
-    //BLE_AT_MODE();
-    ble_write(BLE_AT, "AT+SHOW\r\n", 9);
-    char buf[64];
-    int r = ble_read(BLE_AT, buf, 64, 100);
 
-    //r = ble_read(BLE_AT, &buf[16], 16, 100);
-    int d = 0;
-    d = 0;
-    d = ble_read(BLE_AT, &buf[16], 16, 100);
+
+    ble_init();
+
+
+
 }
 uint16_t Get_ConversionVal1(int16_t val)
 {
@@ -203,40 +204,47 @@ void hw_setup_adc_channels(void){
     ADC_RegularChannelConfig(ADC2, ADC_Channel_9, 4, ADC_SampleTime_7Cycles5 );
     ADC_RegularChannelConfig(ADC2, ADC_Channel_TempSensor, 5, ADC_SampleTime_7Cycles5 );
 }
-static void ble_write(BLEMode mode, char *buf, int size)
-{
-    if(mode == BLE_AT){
-        BLE_AT_MODE();
-    }
-    else if(mode == BLE_TRANSPARENT){
-        BLE_TRANSPARENT_MODE();
-    }
-    int i;
+//static int ble_write(BLEMode mode, char *buf, int size)
+//{
+//    if(mode == BLE_AT){
+//        BLE_AT_MODE();
+//    }
+//    else if(mode == BLE_TRANSPARENT){
+//        BLE_TRANSPARENT_MODE();
+//    }
+//    int i;
+//    uint64_t t = timer_time_now();
+//    for(i = 0; i < size; i++)
+//    {
+//        while(USART_GetFlagStatus(UART8, USART_FLAG_TC) == RESET){
+//            if(timer_milliseconds_elapsed_since(t) >= 5){
+//                return i;
+//            }
+//        }
+//        USART_SendData(UART8, buf[i]);
+//    }
+//    return i;
+//}
+//static int ble_read(BLEMode mode, char *buf, int size, uint32_t timeout){
+//    if(mode == BLE_AT){
+//        BLE_AT_MODE();
+//    }
+//    else if(mode == BLE_TRANSPARENT){
+//        BLE_TRANSPARENT_MODE();
+//    }
+//    int i;
+//    uint64_t t = timer_time_now();
+//    for(i = 0; i < size; i++)
+//    {
+//        while(USART_GetFlagStatus(UART8, USART_FLAG_RXNE) == RESET)
+//        {
+//            if(timer_milliseconds_elapsed_since(t) >= timeout){
+//                return i;
+//            }
+//        }
+//        buf[i] = USART_ReceiveData(UART8);
+//    }
+//    return i;
+//}
 
-    for(i = 0; i < size; i++)
-    {
-        while(USART_GetFlagStatus(UART8, USART_FLAG_TC) == RESET);
-        USART_SendData(UART8, *buf++);
-    }
-}
-static int ble_read(BLEMode mode, char *buf, int size, uint32_t timeout){
-    if(mode == BLE_AT){
-        BLE_AT_MODE();
-    }
-    else if(mode == BLE_TRANSPARENT){
-        BLE_TRANSPARENT_MODE();
-    }
-    int i;
-    uint64_t t = timer_time_now();
-    for(i = 0; i < size; i++)
-    {
-        while(USART_GetFlagStatus(UART8, USART_FLAG_RXNE) == RESET)
-        {
-            if(timer_milliseconds_elapsed_since(t) >= timeout){
-                return i;
-            }
-        }
-        buf[i] = USART_ReceiveData(UART8);
-    }
-    return i;
-}
+

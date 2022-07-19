@@ -19,6 +19,7 @@
 #include "hw.h"
 #include "timer.h"
 #include "mcpwm_foc.h"
+//#include "ch32v30x_usbhs_device.h"
 /* Global define */
 #define TASK1_TASK_PRIO     5
 #define TASK1_STK_SIZE      512
@@ -42,7 +43,7 @@ void task1_task(void *pvParameters)
 {
     while(1)
     {
-        printf("task1 entry %ld\n", timer_milliseconds_elapsed_since(0));
+        //printf("task1 entry %ld\n", timer_milliseconds_elapsed_since(0));
         //for(uint8_t i = 0; i < ADC_TOTAL_CHANNELS/2; i++){
             //ADC_SoftwareStartConvCmd(ADC1, ENABLE);
         //    vTaskDelay(1);
@@ -53,13 +54,13 @@ void task1_task(void *pvParameters)
         LED1_OFF();
         vTaskDelay(250);
         //printf("ADC 0~1 %d, %d\n",Get_ConversionVal2(ADC_Value[0]), Get_ConversionVal2(ADC_Value[1]));
-        printf("ADC 0~3 %d, %d, %d, %d\n",Get_ConversionVal1(ADC_Value[0]), Get_ConversionVal1(ADC_Value[2]), Get_ConversionVal1(ADC_Value[4]), Get_ConversionVal1(ADC_Value[6]));
-        printf("ADC 4~7 %d, %d, %d, %d\n",Get_ConversionVal1(ADC_Value[8]), Get_ConversionVal2(ADC_Value[1]), Get_ConversionVal2(ADC_Value[3]), Get_ConversionVal2(ADC_Value[5]));
-        printf("ADC 8~9 %d, %d\n",Get_ConversionVal2(ADC_Value[7]), Get_ConversionVal2(ADC_Value[9]));
+        //printf("ADC 0~3 %d, %d, %d, %d\n",Get_ConversionVal1(ADC_Value[0]), Get_ConversionVal1(ADC_Value[2]), Get_ConversionVal1(ADC_Value[4]), Get_ConversionVal1(ADC_Value[6]));
+        //printf("ADC 4~7 %d, %d, %d, %d\n",Get_ConversionVal1(ADC_Value[8]), Get_ConversionVal2(ADC_Value[1]), Get_ConversionVal2(ADC_Value[3]), Get_ConversionVal2(ADC_Value[5]));
+        //printf("ADC 8~9 %d, %d\n",Get_ConversionVal2(ADC_Value[7]), Get_ConversionVal2(ADC_Value[9]));
 
-        int32_t val_mv = (Get_ConversionVal2(ADC_Value[9])*3300/4096);
+        //int32_t val_mv = (Get_ConversionVal2(ADC_Value[9])*3300/4096);
 
-        printf("mv-T-%d,%0dC\n",val_mv ,TempSensor_Volt_To_Temper(val_mv));
+        //printf("mv-T-%d,%0dC\n",val_mv ,TempSensor_Volt_To_Temper(val_mv));
     }
 }
 
@@ -104,9 +105,11 @@ int main(void)
 	timer_init();
 
 	hw_init_gpio();
+	timer_sleep_ms(100);
 	hw_init_peripherals();
 
 	mcpwm_foc_init();
+
 	/* create two task */
     xTaskCreate((TaskFunction_t )task2_task,
                         (const char*    )"task2",
