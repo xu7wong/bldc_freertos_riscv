@@ -8,6 +8,7 @@
 #ifndef VESC_BLE_H_
 #define VESC_BLE_H_
 
+#include <stdint.h>
 
 typedef enum
 {

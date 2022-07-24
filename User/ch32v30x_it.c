@@ -8,14 +8,17 @@
  * SPDX-License-Identifier: Apache-2.0
  *******************************************************************************/
 #include "ch32v30x_it.h"
+#include "ch32v30x_tim.h"
 #include "hw.h"
+#include "can.h"
+
 void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void DMA1_Channel1_IRQHandler(void)   __attribute__((interrupt("WCH-Interrupt-fast")));
 //void DMA2_Channel10_IRQHandler(void)   __attribute__((interrupt("WCH-Interrupt-fast")));
 //void UART8_IRQHandler(void)   __attribute__((interrupt("WCH-Interrupt-fast")));
-
+void USB_LP_CAN1_RX0_IRQHandler(void)   __attribute__((interrupt("WCH-Interrupt-fast")));
 /*********************************************************************
  * @fn      NMI_Handler
  *
@@ -91,3 +94,31 @@ void DMA1_Channel1_IRQHandler()
 //
 //    //}
 //}
+
+void USB_LP_CAN1_RX0_IRQHandler(){
+//    u8 rx,i;
+    //    u8 rxbuf[8];
+    //
+    if( CAN_GetITStatus( CAN1, CAN_IT_FMP0 ) != RESET )
+    {
+        CanRxMsg canRxStructure;
+        CAN_Receive( CAN1, CAN_FIFO0, &canRxStructure );
+        if(canRxStructure.StdId == 0x017){
+            if(can_rx_payload.finished == 0){
+                for(uint8_t i=0; i<canRxStructure.DLC; i++ )
+                {
+                    can_rx_payload.buffer[i] = canRxStructure.Data[i];
+                }
+                can_rx_payload.length = can_rx_payload.length + canRxStructure.DLC;
+            }
+        }
+        else if(canRxStructure.StdId == 0x018){
+            uint16_t len = ((uint16_t)canRxStructure.Data[0] << 8) + (uint16_t)canRxStructure.Data[1];
+            if(can_rx_payload.length == len){
+                can_rx_payload.finished = 1;
+            }
+        }
+
+        CAN_ClearITPendingBit( CAN1, CAN_IT_FMP0 );
+    }
+}

@@ -1,17 +1,17 @@
 /********************************** (C) COPYRIGHT *******************************
-* File Name          : main.c
-* Author             : WCH
-* Version            : V1.0.0
-* Date               : 2021/06/06
-* Description        : Main program body.
-* Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
-* SPDX-License-Identifier: Apache-2.0
-*******************************************************************************/
+ * File Name          : main.c
+ * Author             : WCH
+ * Version            : V1.0.0
+ * Date               : 2021/06/06
+ * Description        : Main program body.
+ * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+ * SPDX-License-Identifier: Apache-2.0
+ *******************************************************************************/
 
 /*
  *@Note
  task1 and task2 alternate printing
-*/
+ */
 #include <string.h>
 #include "debug.h"
 #include "FreeRTOS.h"
@@ -19,6 +19,7 @@
 #include "hw.h"
 #include "timer.h"
 #include "mcpwm_foc.h"
+#include "can.h"
 //#include "ch32v30x_usbhs_device.h"
 /* Global define */
 #define TASK1_TASK_PRIO     5
@@ -45,7 +46,7 @@ void task1_task(void *pvParameters)
     {
         printf("task1 entry %ld\n", timer_milliseconds_elapsed_since(0));
         //for(uint8_t i = 0; i < ADC_TOTAL_CHANNELS/2; i++){
-            //ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+        //ADC_SoftwareStartConvCmd(ADC1, ENABLE);
         //    vTaskDelay(1);
         //}
 
@@ -61,6 +62,9 @@ void task1_task(void *pvParameters)
         uint32_t val_12Vmv = Get_ConversionVal1(ADC_Value[8])*825*292/1024/22;
         uint32_t val_75Vmv = Get_ConversionVal1(ADC_Value[6])*825*582/1024/22;
         printf("12V=%ld, 75V=%ld\n",val_12Vmv, val_75Vmv);
+        uint8_t msg[] = {1, 2, 3, 4, 5, 6, 7, 8};
+        can_send_msg(msg, 8);
+
     }
 }
 
@@ -97,38 +101,38 @@ void task2_task(void *pvParameters)
 int main(void)
 {
 
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-	Delay_Init();
-	USART_Printf_Init(115200);
-	printf("SystemClk:%d\n",SystemCoreClock);
-	printf("FreeRTOS Kernel Version:%s\n",tskKERNEL_VERSION_NUMBER);
-	timer_init();
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+    Delay_Init();
+    USART_Printf_Init(115200);
+    printf("SystemClk:%d\n",SystemCoreClock);
+    printf("FreeRTOS Kernel Version:%s\n",tskKERNEL_VERSION_NUMBER);
+    timer_init();
 
-	hw_init_gpio();
-	timer_sleep_ms(100);
-	hw_init_peripherals();
-	timer_sleep_ms(500);
-	mcpwm_foc_init();
+    hw_init_gpio();
+    timer_sleep_ms(500);
 
-	/* create two task */
+    hw_init_peripherals();
+    mcpwm_foc_init();
+
+    /* create two task */
     xTaskCreate((TaskFunction_t )task2_task,
-                        (const char*    )"task2",
-                        (uint16_t       )TASK2_STK_SIZE,
-                        (void*          )NULL,
-                        (UBaseType_t    )TASK2_TASK_PRIO,
-                        (TaskHandle_t*  )&Task2Task_Handler);
+            (const char*    )"task2",
+            (uint16_t       )TASK2_STK_SIZE,
+            (void*          )NULL,
+            (UBaseType_t    )TASK2_TASK_PRIO,
+            (TaskHandle_t*  )&Task2Task_Handler);
 
     xTaskCreate((TaskFunction_t )task1_task,
-                    (const char*    )"task1",
-                    (uint16_t       )TASK1_STK_SIZE,
-                    (void*          )NULL,
-                    (UBaseType_t    )TASK1_TASK_PRIO,
-                    (TaskHandle_t*  )&Task1Task_Handler);
+            (const char*    )"task1",
+            (uint16_t       )TASK1_STK_SIZE,
+            (void*          )NULL,
+            (UBaseType_t    )TASK1_TASK_PRIO,
+            (TaskHandle_t*  )&Task1Task_Handler);
     vTaskStartScheduler();
 
-	while(1)
-	{
-	    printf("shouldn't run at here!!\n");
-	    timer_sleep_ms(500);
-	}
+    while(1)
+    {
+        printf("shouldn't run at here!!\n");
+        timer_sleep_ms(500);
+    }
 }

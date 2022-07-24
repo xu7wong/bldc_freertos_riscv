@@ -8,6 +8,7 @@
 #ifndef VESC_TIMER_H_
 #define VESC_TIMER_H_
 #include <stdint.h>
+
 void timer_init(void);
 uint64_t timer_time_now(void);
 float timer_seconds_elapsed_since(uint64_t time);

@@ -7,6 +7,7 @@
 
 #ifndef VESC_MCPWM_FOC_H_
 #define VESC_MCPWM_FOC_H_
+#include <stdint.h>
 
 void mcpwm_foc_init();
 

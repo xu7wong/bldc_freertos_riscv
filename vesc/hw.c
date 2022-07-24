@@ -5,15 +5,16 @@
  *      Author: Carl
  */
 #include "hw.h"
+
+#include "ch32v30x_adc.h"
+
 #include "timer.h"
-
-
-
 #include "ble.h"
-
+#include "can.h"
 uint16_t ADC_Value[ADC_TOTAL_CHANNELS];
 int16_t Calibrattion_Val1 = 0;
 int16_t Calibrattion_Val2 = 0;
+
 
 //static int ble_write(BLEMode mode, char *buf, int size);
 //static int ble_read(BLEMode mode, char *buf, int size, uint32_t timeout);
@@ -34,7 +35,6 @@ void hw_init_gpio(void){
     /* TIM10_CH1/CH2/CH3 or Hall sensor input x3 */
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_11 | GPIO_Pin_13;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-    GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
     GPIO_Init(GPIOD, &GPIO_InitStructure);
 
     /* TIM1_CH1 */
@@ -128,16 +128,16 @@ void hw_init_gpio(void){
     GPIO_Init( GPIOD, &GPIO_InitStructure );
 
     /* CAN1 */
-    GPIO_PinRemapConfig( GPIO_Remap1_CAN1, ENABLE);
+    GPIO_PinRemapConfig( GPIO_Remap2_CAN1, ENABLE);
     //TX
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init( GPIOB, &GPIO_InitStructure);
+    GPIO_Init( GPIOD, &GPIO_InitStructure);
     //RX
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-    GPIO_Init( GPIOB, &GPIO_InitStructure);
+    GPIO_Init( GPIOD, &GPIO_InitStructure);
 
     /* SPI3 */
     GPIO_PinRemapConfig(GPIO_Remap_SPI3, ENABLE);
@@ -172,7 +172,7 @@ void hw_init_gpio(void){
 void hw_init_peripherals(void){
 
 
-
+    can_bus_init();
     ble_init();
 
 
@@ -193,15 +193,23 @@ uint16_t Get_ConversionVal2(int16_t val)
 
 void hw_setup_adc_channels(void){
     ADC_RegularChannelConfig(ADC1, ADC_Channel_2, 1, ADC_SampleTime_7Cycles5 );
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 2, ADC_SampleTime_7Cycles5 );
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 3, ADC_SampleTime_7Cycles5 );
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_8, 4, ADC_SampleTime_7Cycles5 ); //ADC_Vin
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 5, ADC_SampleTime_7Cycles5 ); //ADC_V12V
 
     ADC_RegularChannelConfig(ADC2, ADC_Channel_3, 1, ADC_SampleTime_7Cycles5 );
+
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 2, ADC_SampleTime_7Cycles5 );
+
     ADC_RegularChannelConfig(ADC2, ADC_Channel_5, 2, ADC_SampleTime_7Cycles5 );
+
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 3, ADC_SampleTime_7Cycles5 );
+
     ADC_RegularChannelConfig(ADC2, ADC_Channel_7, 3, ADC_SampleTime_7Cycles5 );
+
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_8, 4, ADC_SampleTime_7Cycles5 ); //ADC_Vin
+
     ADC_RegularChannelConfig(ADC2, ADC_Channel_9, 4, ADC_SampleTime_7Cycles5 ); //ADC_EXT
+
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 5, ADC_SampleTime_7Cycles5 ); //ADC_V12V
+
     ADC_RegularChannelConfig(ADC2, ADC_Channel_10, 5, ADC_SampleTime_7Cycles5 );//Motor Temperature
 }
 //static int ble_write(BLEMode mode, char *buf, int size)

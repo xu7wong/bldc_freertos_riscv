@@ -4,9 +4,10 @@
  *  Created on: 6/07/2022
  *      Author: Carl
  */
+#include "mcpwm_foc.h"
 #include "hw.h"
 
-
+#include "ch32v30x_tim.h"
 
 static void timer_reinit(int f_zv){
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
@@ -120,6 +121,7 @@ void mcpwm_foc_init(){
     ADC_Init(ADC1, &ADC_InitStructure);
 
     ADC_ExternalTrigConvCmd(ADC1, ENABLE);
+
     //ADC_ExternalTrigInjectedConvCmd(ADC1, ENABLE);
     ADC_DMACmd(ADC1, ENABLE);
     ADC_Cmd(ADC1, ENABLE);
@@ -144,7 +146,7 @@ void mcpwm_foc_init(){
 
     ADC_Init(ADC2, &ADC_InitStructure);
 
-
+    ADC_ExternalTrigConvCmd(ADC2, ENABLE);
     ADC_Cmd(ADC2, ENABLE);
 
     ADC_BufferCmd(ADC2, DISABLE);   //disable buffer

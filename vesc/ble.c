@@ -8,28 +8,31 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include <string.h>
-#include "hw.h"
+#include "ch32v30x_usart.h"
+#include "ch32v30x_dma.h"
+
 #define BUFFER_BLE_RX_SIZE 128
 #define BUFFER_BLE_TX_SIZE 128
 #define TASK_PRIO_BLE_READ 7
 #define TASK_STK_SIZE_BLE_READ 512
 #define TASK_PRIO_BLE_MANAGER 7
 #define TASK_STK_SIZE_BLE_MANAGER 512
-TaskHandle_t Task_Handler_BLE_Read;
-TaskHandle_t Task_Handler_BLE_Manager;
+static TaskHandle_t Task_Handler_BLE_Read;
+static TaskHandle_t Task_Handler_BLE_Manager;
 static void task_ble_read(void *pvParameters);
 static void task_ble_manager(void *pvParameters);
 static uint8_t ble_rx_buffer[BUFFER_BLE_RX_SIZE];
 static uint8_t ble_tx_buffer[BUFFER_BLE_TX_SIZE];
 
-static BLEConfig bleConfig;
+static BLEConfig ble_config;
 
 void ble_init(void){
-    bleConfig.mode = BLE_AT;
-    bleConfig.config_status = BLE_RESET;
-    memset(bleConfig.device_name, 0, sizeof(bleConfig.device_name));
+
+    ble_config.mode = BLE_AT;
+    ble_config.config_status = BLE_RESET;
+    memset(ble_config.device_name, 0, sizeof(ble_config.device_name));
     char* device_name = BLE_DEFAULT_NAME;
-    memcpy(bleConfig.device_name, device_name, strlen(device_name));
+    memcpy(ble_config.device_name, device_name, strlen(device_name));
 
     /*
      * UART8 DMA TX + RX without interrupt
@@ -135,7 +138,7 @@ static void ble_dma_write(BLEMode mode, uint8_t* buffer, uint16_t len){
     memcpy(ble_tx_buffer, buffer, len);
     if(mode == BLE_AT)BLE_AT_MODE();
     else if(mode == BLE_TRANSPARENT)BLE_TRANSPARENT_MODE();
-    bleConfig.mode = mode;
+    ble_config.mode = mode;
     DMA_SetCurrDataCounter(DMA2_Channel10, len);
     USART_DMACmd(UART8, USART_DMAReq_Tx, ENABLE);
 #if BLE_DEBUG
@@ -145,7 +148,7 @@ static void ble_dma_write(BLEMode mode, uint8_t* buffer, uint16_t len){
 static void task_ble_manager(void *pvParameters){
     while(1)
     {
-        if(bleConfig.config_status == BLE_RESET){
+        if(ble_config.config_status == BLE_RESET){
             char* msg = "AT+NAME?\r\n";
             ble_dma_write(BLE_AT, (uint8_t*)msg, strlen(msg));
 //
@@ -158,26 +161,26 @@ static void task_ble_manager(void *pvParameters){
 //            printf("request ble name\n");
 //#endif
         }
-        else if(bleConfig.config_status == BLE_NAME_ERROR){
+        else if(ble_config.config_status == BLE_NAME_ERROR){
 
             char* msg1 = "AT+NAME=";
             char* msg2 = "\r\n";
-            char msg[strlen(msg1) + strlen(bleConfig.device_name) + strlen(msg2)];
+            char msg[strlen(msg1) + strlen(ble_config.device_name) + strlen(msg2)];
             memcpy(&msg[0], msg1, strlen(msg1));
-            memcpy(&msg[0 + strlen(msg1)], bleConfig.device_name, strlen(bleConfig.device_name));
-            memcpy(&msg[0 + strlen(msg1) + strlen(bleConfig.device_name)], msg2, strlen(msg2));
+            memcpy(&msg[0 + strlen(msg1)], ble_config.device_name, strlen(ble_config.device_name));
+            memcpy(&msg[0 + strlen(msg1) + strlen(ble_config.device_name)], msg2, strlen(msg2));
 
-            ble_dma_write(BLE_AT, (uint8_t*)msg, strlen(msg1) + strlen(bleConfig.device_name) + strlen(msg2));
+            ble_dma_write(BLE_AT, (uint8_t*)msg, strlen(msg1) + strlen(ble_config.device_name) + strlen(msg2));
         }
-        else if(bleConfig.config_status == BLE_RENAMED){
+        else if(ble_config.config_status == BLE_RENAMED){
             char* msg = "AT+RESET\r\n";
             ble_dma_write(BLE_AT, (uint8_t*)msg, strlen(msg));
         }
-        else if(bleConfig.config_status == BLE_NORMAL){
+        else if(ble_config.config_status == BLE_NORMAL){
             char* msg = "AT+BLESTA?\r\n";
             ble_dma_write(BLE_AT, (uint8_t*)msg, strlen(msg));
         }
-        else if(bleConfig.config_status == BLE_BUSY){
+        else if(ble_config.config_status == BLE_BUSY){
 #if BLE_DEBUG
             char* msg = "{\"heartbeat\": 1}";
             ble_dma_write(BLE_TRANSPARENT, (uint8_t*)msg, strlen(msg));
@@ -205,38 +208,38 @@ static void task_ble_read(void *pvParameters){
                 USART_SendData(USART3, ble_rx_buffer[i]);
             }
 #endif
-            if(bleConfig.mode == BLE_AT){
+            if(ble_config.mode == BLE_AT){
                 int16_t at_len = at_command_valid(ble_rx_buffer, buffer_len);
-                if(bleConfig.config_status == BLE_RESET){
+                if(ble_config.config_status == BLE_RESET){
 
                     if(at_len > 0){
-                        if(at_len != strlen(bleConfig.device_name)){
-                            bleConfig.config_status = BLE_NAME_ERROR;
+                        if(at_len != strlen(ble_config.device_name)){
+                            ble_config.config_status = BLE_NAME_ERROR;
                         }
-                        else if(memcmp(bleConfig.device_name, ble_rx_buffer, strlen(bleConfig.device_name)) == 0){
-                            bleConfig.config_status = BLE_NORMAL;
+                        else if(memcmp(ble_config.device_name, ble_rx_buffer, strlen(ble_config.device_name)) == 0){
+                            ble_config.config_status = BLE_NORMAL;
                         }
                         else{
-                            bleConfig.config_status = BLE_NAME_ERROR;
+                            ble_config.config_status = BLE_NAME_ERROR;
                         }
                     }
                 }
-                else if(bleConfig.config_status == BLE_NAME_ERROR){
+                else if(ble_config.config_status == BLE_NAME_ERROR){
                     if(at_len == 0){
-                        bleConfig.config_status = BLE_RENAMED;
+                        ble_config.config_status = BLE_RENAMED;
                     }
                 }
-                else if(bleConfig.config_status == BLE_NORMAL){
+                else if(ble_config.config_status == BLE_NORMAL){
                     if(at_len > 0){
                         if(at_len == 2){
                             if(ble_rx_buffer[0] == '0' && ble_rx_buffer[1] == '5'){
-                                bleConfig.connect_status = BLE_CONNECTED;
+                                ble_config.connect_status = BLE_CONNECTED;
                                 BLE_TRANSPARENT_MODE();
-                                bleConfig.mode = BLE_TRANSPARENT;
-                                bleConfig.config_status = BLE_BUSY;
+                                ble_config.mode = BLE_TRANSPARENT;
+                                ble_config.config_status = BLE_BUSY;
                             }
                             else{
-                                bleConfig.connect_status = BLE_DISCONNECTED;
+                                ble_config.connect_status = BLE_DISCONNECTED;
                             }
                         }
                     }
@@ -244,7 +247,7 @@ static void task_ble_read(void *pvParameters){
 
                 //BLE_TRANSPARENT_MODE();
             }
-            else if(bleConfig.mode == BLE_TRANSPARENT){
+            else if(ble_config.mode == BLE_TRANSPARENT){
 
             }
             DMA_Cmd( DMA2_Channel11, ENABLE );
