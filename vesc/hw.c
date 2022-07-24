@@ -49,7 +49,7 @@ void hw_init_gpio(void){
     GPIO_Init( GPIOB, &GPIO_InitStructure );
 
     /* ADC CH0 ~ CH10 */
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
@@ -57,17 +57,17 @@ void hw_init_gpio(void){
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
     GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
     GPIO_Init(GPIOC, &GPIO_InitStructure);
 
     /* TIM2 */
     //GPIO_PinRemapConfig(GPIO_FullRemap_TIM2, ENABLE);
     //CH0
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init( GPIOA, &GPIO_InitStructure );
+    //GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+    //GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+    //GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    //GPIO_Init( GPIOA, &GPIO_InitStructure );
 
     /* UART8 */
     GPIO_PinRemapConfig(GPIO_FullRemap_USART8, ENABLE);
@@ -195,14 +195,14 @@ void hw_setup_adc_channels(void){
     ADC_RegularChannelConfig(ADC1, ADC_Channel_2, 1, ADC_SampleTime_7Cycles5 );
     ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 2, ADC_SampleTime_7Cycles5 );
     ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 3, ADC_SampleTime_7Cycles5 );
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_8, 4, ADC_SampleTime_7Cycles5 );
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_Vrefint, 5, ADC_SampleTime_7Cycles5 );
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_8, 4, ADC_SampleTime_7Cycles5 ); //ADC_Vin
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 5, ADC_SampleTime_7Cycles5 ); //ADC_V12V
 
     ADC_RegularChannelConfig(ADC2, ADC_Channel_3, 1, ADC_SampleTime_7Cycles5 );
     ADC_RegularChannelConfig(ADC2, ADC_Channel_5, 2, ADC_SampleTime_7Cycles5 );
     ADC_RegularChannelConfig(ADC2, ADC_Channel_7, 3, ADC_SampleTime_7Cycles5 );
-    ADC_RegularChannelConfig(ADC2, ADC_Channel_9, 4, ADC_SampleTime_7Cycles5 );
-    ADC_RegularChannelConfig(ADC2, ADC_Channel_TempSensor, 5, ADC_SampleTime_7Cycles5 );
+    ADC_RegularChannelConfig(ADC2, ADC_Channel_9, 4, ADC_SampleTime_7Cycles5 ); //ADC_EXT
+    ADC_RegularChannelConfig(ADC2, ADC_Channel_10, 5, ADC_SampleTime_7Cycles5 );//Motor Temperature
 }
 //static int ble_write(BLEMode mode, char *buf, int size)
 //{

@@ -43,7 +43,7 @@ void task1_task(void *pvParameters)
 {
     while(1)
     {
-        //printf("task1 entry %ld\n", timer_milliseconds_elapsed_since(0));
+        printf("task1 entry %ld\n", timer_milliseconds_elapsed_since(0));
         //for(uint8_t i = 0; i < ADC_TOTAL_CHANNELS/2; i++){
             //ADC_SoftwareStartConvCmd(ADC1, ENABLE);
         //    vTaskDelay(1);
@@ -58,9 +58,9 @@ void task1_task(void *pvParameters)
         //printf("ADC 4~7 %d, %d, %d, %d\n",Get_ConversionVal1(ADC_Value[8]), Get_ConversionVal2(ADC_Value[1]), Get_ConversionVal2(ADC_Value[3]), Get_ConversionVal2(ADC_Value[5]));
         //printf("ADC 8~9 %d, %d\n",Get_ConversionVal2(ADC_Value[7]), Get_ConversionVal2(ADC_Value[9]));
 
-        //int32_t val_mv = (Get_ConversionVal2(ADC_Value[9])*3300/4096);
-
-        //printf("mv-T-%d,%0dC\n",val_mv ,TempSensor_Volt_To_Temper(val_mv));
+        uint32_t val_12Vmv = Get_ConversionVal1(ADC_Value[8])*825*292/1024/22;
+        uint32_t val_75Vmv = Get_ConversionVal1(ADC_Value[6])*825*582/1024/22;
+        printf("12V=%ld, 75V=%ld\n",val_12Vmv, val_75Vmv);
     }
 }
 
@@ -107,7 +107,7 @@ int main(void)
 	hw_init_gpio();
 	timer_sleep_ms(100);
 	hw_init_peripherals();
-
+	timer_sleep_ms(500);
 	mcpwm_foc_init();
 
 	/* create two task */

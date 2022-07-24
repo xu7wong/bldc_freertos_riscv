@@ -35,7 +35,7 @@ typedef struct
     BLEConnectionStatus connect_status;
 } BLEConfig;
 
-#define BLE_DEBUG 1
+#define BLE_DEBUG 0
 #define BLE_DEFAULT_NAME "ABC-7XXXXX"
 
 #define BLE_AT_MODE() GPIO_ResetBits(GPIOE, GPIO_Pin_7)
