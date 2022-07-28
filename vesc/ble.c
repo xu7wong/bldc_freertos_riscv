@@ -10,6 +10,9 @@
 #include <string.h>
 #include "ch32v30x_usart.h"
 #include "ch32v30x_dma.h"
+#include "ch32v30x_misc.h"
+#include "ch32v30x_rcc.h"
+#include "ch32v30x_gpio.h"
 
 #define BUFFER_BLE_RX_SIZE 128
 #define BUFFER_BLE_TX_SIZE 128

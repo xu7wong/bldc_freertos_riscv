@@ -7,6 +7,8 @@
 
 #include "timer.h"
 //#include "debug.h"
+#include "ch32v30x_misc.h"
+#include "ch32v30x_rcc.h"
 #include "ch32v30x_tim.h"
 #define TIMER_HZ            12000000
 #define TIMER_KHZ           12000

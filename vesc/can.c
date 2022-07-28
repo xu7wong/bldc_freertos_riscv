@@ -7,10 +7,16 @@
 
 #include "can.h"
 #include "hw.h"
-#include "ch32v30x_can.h"
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include <string.h>
+
+#include "ch32v30x_misc.h"
+#include "ch32v30x_rcc.h"
+#include "ch32v30x_can.h"
+#include "ch32v30x_gpio.h"
+
 volatile CANRXPayload can_rx_payload;
 
 static TaskHandle_t Task_Handler_Comm_CAN_Manager;

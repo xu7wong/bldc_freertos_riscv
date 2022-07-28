@@ -8,9 +8,18 @@
  * SPDX-License-Identifier: Apache-2.0
  *******************************************************************************/
 #include "ch32v30x_it.h"
+
+#include "ch32v30x_misc.h"
+#include "ch32v30x_rcc.h"
+#include "ch32v30x_gpio.h"
 #include "ch32v30x_tim.h"
+#include "ch32v30x_dma.h"
+#include "ch32v30x_can.h"
+
 #include "hw.h"
 #include "can.h"
+#include "mc_interface.h"
+#include "mcpwm_foc.h"
 
 void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -49,7 +58,8 @@ void TIM2_IRQHandler(void)
     if(TIM_GetITStatus(TIM2, TIM_IT_CC2)==SET)
     {
         TIM_ClearITPendingBit(TIM2, TIM_IT_CC2);
-        TIM_GenerateEvent(TIM1, TIM_EventSource_COM);
+
+        mcpwm_foc_tim_sample_int_handler();
 
         GPIO_SetBits(GPIOE, GPIO_Pin_1);
 
@@ -61,6 +71,7 @@ void DMA1_Channel1_IRQHandler()
     if(DMA_GetITStatus(DMA1_IT_TC1)==SET ){
         DMA_ClearITPendingBit(DMA1_IT_TC1);
 
+        //mcpwm_foc_adc_int_handler();
         GPIO_ResetBits(GPIOE, GPIO_Pin_1);
 
 #if 0
