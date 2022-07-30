@@ -1,54 +1,34 @@
 /********************************** (C) COPYRIGHT *******************************
- * File Name          : main.c
- * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2021/06/06
- * Description        : Main program body.
- * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
- * SPDX-License-Identifier: Apache-2.0
- *******************************************************************************/
+* File Name          : main.c
+* Author             : WCH
+* Version            : V1.0.0
+* Date               : 2021/06/06
+* Description        : Main program body.
+* Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+* SPDX-License-Identifier: Apache-2.0
+*******************************************************************************/
 
 /*
  *@Note
- task1 and task2 alternate printing
- */
-#include <string.h>
-#include <math.h>
-#include "debug.h"
-//#include "FreeRTOS.h"
-//#include "task.h"
+ 串口打印调试例程：
+ USART1_Tx(PA9)。
+ 本例程演示使用 USART1(PA9) 作打印调试口输出。
 
-#include "ch32v30x_misc.h"
+*/
+
+#include "debug.h"
+#include "math.h"
 
 #include "hw.h"
 #include "timer.h"
 #include "mcpwm_foc.h"
-#include "can.h"
+//#include "can.h"
 
 #include "utils.h"
 #include "mcconf_default.h"
 #include "mc_interface.h"
 #include "mcpwm_foc.h"
-//#include "ch32v30x_usbhs_device.h"
 
-//TaskHandle_t Task_Loader_Handler;
-
-//void task_loader(void *pvParameters)
-//{
-//
-//
-//    mc_interface_set_current((float)4.0);
-//    while(1)
-//    {
-//
-//        //printf("task2 entry\n");
-//        LED1_ON();
-//        vTaskDelay(500);
-//        LED1_OFF();
-//        vTaskDelay(500);
-//
-//    }
-//}
 
 /*********************************************************************
  * @fn      main
@@ -57,46 +37,62 @@
  *
  * @return  none
  */
+uint32_t t_flag1 = 0;
+uint32_t t_flag2 = 0;
+
+float current_set = 1.0;
 int main(void)
 {
-
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
     Delay_Init();
     USART_Printf_Init(115200);
-    printf("SystemClk:%d\n",SystemCoreClock);
-//    printf("FreeRTOS Kernel Version:%s\n",tskKERNEL_VERSION_NUMBER);
-    timer_init();
+    printf("SystemClk:%d\r\n",SystemCoreClock);
 
+
+    timer_init();
+    timer_sleep_ms(500);
     hw_init_gpio();
     timer_sleep_ms(500);
 
-    hw_init_peripherals();
+    //hw_init_peripherals();
 
     mc_interface_init();
-//    float a = 2.0;
-//    a = sqrtf(a);
 
-    /* create two task */
-//    xTaskCreate((TaskFunction_t )task2_task,
-//            (const char*    )"task2",
-//            (uint16_t       )TASK2_STK_SIZE,
-//            (void*          )NULL,
-//            (UBaseType_t    )TASK2_TASK_PRIO,
-//            (TaskHandle_t*  )&Task2Task_Handler);
+    //printf("%d.%d%d\n", (int)val1, t, t1);
+    //mc_interface_set_current((float)1.0);
 
-//    xTaskCreate((TaskFunction_t )task_loader,
-//            (const char*    )"Task_Loader",
-//            (uint16_t       )512,
-//            (void*          )NULL,
-//            (UBaseType_t    )5,
-//            (TaskHandle_t*  )&Task_Loader_Handler);
-//    vTaskStartScheduler();
-//    mc_interface_set_current((float)4.0);
-    while(1)
-    {
-//        printf("shouldn't run at here!!\n");
+    t_flag1 = timer_1by10milliseconds_elapsed_since(0);
+    t_flag2 = timer_1by10milliseconds_elapsed_since(0);
+    while(1){
 
-//        thread_foc_run();
-        timer_sleep_ms(1);
+        //timer_sleep_ms(1);
+        uint32_t t = timer_1by10milliseconds_elapsed_since(0);
+        if(t - t_flag2 >=10){
+            t_flag2 = t;
+            thread_foc_run();
+        }
+        if(t - t_flag1 >=5000){
+            t_flag1 = t;
+
+
+            current_set = current_set + 0.5;
+
+            if(current_set>=9.0){
+                current_set = 1.0;
+
+            }
+
+            if(current_set>=7.0){
+                            mc_interface_set_brake_current(15.0);
+                        }
+            else mc_interface_set_current(current_set);
+            printf("now:%ld, %d\r\n",t_flag1, (uint16_t)current_set);
+        }
+        //LED2_ON();
+        //mcpwm_foc_adc_int_handler();
+
+        //LED2_OFF();
+        //Delay_Ms(150);
     }
 }
+

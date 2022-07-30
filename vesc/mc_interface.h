@@ -22,6 +22,7 @@
 
 // #include "conf_general.h"
 #include "hw.h"
+#include "datatypes.h"
 
 // Functions
 void mc_interface_init(void);
@@ -38,6 +39,7 @@ void mc_interface_set_current(float current);
 void mc_interface_set_brake_current(float current);
 void mc_interface_set_current_rel(float val);
 void mc_interface_release_motor(void);
+float mc_interface_get_12V_voltage_filtered(void);
 float mc_interface_get_input_voltage_filtered(void);
 float mc_interface_temp_motor_filtered(void);
 
@@ -51,6 +53,10 @@ void mc_interface_stat_reset(void);
 // External variables
 extern volatile uint16_t ADC_Value[];
 extern volatile float ADC_curr_norm_value[];
+
+
+void confgenerator_set_defaults_mcconf(mc_configuration *conf);
+uint8_t conf_general_calculate_deadtime(float deadtime_ns, float core_clock_freq);
 
 // Common fixed parameters
 #ifndef HW_DEAD_TIME_NSEC

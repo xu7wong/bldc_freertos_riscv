@@ -13,8 +13,9 @@ void timer_init(void);
 uint64_t timer_time_now(void);
 float timer_seconds_elapsed_since(uint64_t time);
 uint32_t timer_milliseconds_elapsed_since(uint64_t time);
+uint32_t timer_1by10milliseconds_elapsed_since(uint64_t time);
 void timer_sleep_ms(uint32_t ms);
-
+void timer_sleep_1by10ms(uint32_t _1by10ms);
 
 //uint32_t timer_count(uint8_t i);
 

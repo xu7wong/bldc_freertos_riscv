@@ -8,17 +8,10 @@
 #ifndef VESC_HW_H_
 #define VESC_HW_H_
 #include <stdint.h>
-
-//#include "can.h"
 #include "ch32v30x_gpio.h"
 
 #include "datatypes.h"
-
-
-
-
-
-
+#include "mcconf_default.h"
 
 #define HW_NAME                 "UBCO"
 
@@ -107,8 +100,16 @@
 
 #define FAC_CURRENT                 ((V_REG / 4095.0) / (CURRENT_SHUNT_RES * CURRENT_AMP_GAIN))
 
+#ifndef V12V_R1
+#define V12V_R1                  27000.0
+#endif
+#ifndef V12V_R2
+#define V12V_R2                  2200.0
+#endif
+
 // Input voltage
 #define GET_INPUT_VOLTAGE()     ((V_REG / 4095.0) * (float)ADC_Value[ADC_IND_VIN_SENS] * ((VIN_R1 + VIN_R2) / VIN_R2))
+#define GET_12V_VOLTAGE()     ((V_REG / 4095.0) * (float)ADC_Value[ADC_IND_V12V] * ((V12V_R1 + V12V_R2) / V12V_R2))
 
 #define ADC_V_L1                ADC_Value[ADC_IND_SENS1]
 #define ADC_V_L2                ADC_Value[ADC_IND_SENS2]
@@ -159,10 +160,11 @@
 
 
 
-#define LED1_ON() GPIO_ResetBits(GPIOE, GPIO_Pin_0)
-#define LED1_OFF() GPIO_SetBits(GPIOE, GPIO_Pin_0)
-#define LED2_ON() GPIO_ResetBits(GPIOE, GPIO_Pin_1)
-#define LED2_OFF() GPIO_SetBits(GPIOE, GPIO_Pin_1)
+#define LED1_OFF() GPIO_ResetBits(GPIOE, GPIO_Pin_0)
+#define LED1_ON() GPIO_SetBits(GPIOE, GPIO_Pin_0)
+
+#define LED2_ON() GPIO_SetBits(GPIOE, GPIO_Pin_1)
+#define LED2_OFF() GPIO_ResetBits(GPIOE, GPIO_Pin_1)
 
 
 
@@ -175,11 +177,9 @@ void hw_init_gpio(void);
 void hw_init_peripherals(void);
 void hw_setup_adc_channels(void);
 
-void confgenerator_set_defaults_mcconf(mc_configuration *conf);
-uint8_t conf_general_calculate_deadtime(float deadtime_ns, float core_clock_freq);
-
 uint16_t Get_ConversionVal1(int16_t val);
 uint16_t Get_ConversionVal2(int16_t val);
+
 
 
 #endif /* VESC_HW_H_ */

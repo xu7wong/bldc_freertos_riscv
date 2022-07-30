@@ -7,11 +7,10 @@
 
 #include "timer.h"
 //#include "debug.h"
-#include "ch32v30x_misc.h"
-#include "ch32v30x_rcc.h"
 #include "ch32v30x_tim.h"
 #define TIMER_HZ            12000000
 #define TIMER_KHZ           12000
+#define TIMER_10KHZ           1200
 // system core clock 144000000
 void timer_init(void) {
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
@@ -59,6 +58,14 @@ float timer_seconds_elapsed_since(uint64_t time) {
 uint32_t timer_milliseconds_elapsed_since(uint64_t time) {
     uint64_t diff = timer_time_now() - time;
     return (uint32_t)(diff / TIMER_KHZ);
+}
+uint32_t timer_1by10milliseconds_elapsed_since(uint64_t time) {
+    uint64_t diff = timer_time_now() - time;
+    return (uint32_t)(diff / TIMER_10KHZ);
+}
+void timer_sleep_1by10ms(uint32_t _1by10ms){
+    uint64_t start_t = timer_time_now();
+        while(timer_1by10milliseconds_elapsed_since(start_t) < _1by10ms);
 }
 void timer_sleep_ms(uint32_t ms){
     uint64_t start_t = timer_time_now();

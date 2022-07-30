@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <projectDescription>
-	<name>BLDC_FreeRTOS_RV</name>
+	<name>bldc_riscv</name>
 	<comment/>
 	<projects>
 	</projects>
@@ -23,26 +23,9 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>Core</name>
-			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/SRC/Core</locationURI>
-		</link>
-		<link>
-			<name>Debug</name>
-			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/SRC/Debug</locationURI>
-		</link>
-		<link>
-			<name>Peripheral</name>
-			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/SRC/Peripheral</locationURI>
-		</link>
-	</linkedResources>
 	<filteredResources>
 		<filter>
-			<id>1657092996516</id>
+			<id>1595986042669</id>
 			<name/>
 			<type>22</type>
 			<matcher>

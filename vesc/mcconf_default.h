@@ -28,7 +28,7 @@
 #define MCCONF_PWM_MODE					PWM_MODE_SYNCHRONOUS // Default PWM mode
 #endif
 #ifndef MCCONF_SENSOR_MODE
-#define MCCONF_SENSOR_MODE				SENSOR_MODE_SENSORED // Sensor mode
+#define MCCONF_SENSOR_MODE				SENSOR_MODE_SENSORLESS//SENSOR_MODE_SENSORED // Sensor mode
 #endif
 #ifndef MCCONF_COMM_MODE
 #define MCCONF_COMM_MODE				COMM_MODE_INTEGRATE	// The commutation mode to use
@@ -49,6 +49,10 @@
 #endif
 #ifndef MCCONF_L_MAX_ABS_CURRENT
 #define MCCONF_L_MAX_ABS_CURRENT		130.0	// The maximum absolute current above which a fault is generated
+#endif
+
+#ifndef MCCONF_12V_MIN_VOLTAGE
+#define MCCONF_12V_MIN_VOLTAGE            10.5        // Minimum input voltage
 #endif
 #ifndef MCCONF_L_MIN_VOLTAGE
 #define MCCONF_L_MIN_VOLTAGE			24.0		// Minimum input voltage
@@ -260,7 +264,7 @@
 #define MCCONF_FOC_ENCODER_RATIO		7.0
 #endif
 #ifndef MCCONF_FOC_SENSOR_MODE
-#define MCCONF_FOC_SENSOR_MODE			FOC_SENSOR_MODE_HALL
+#define MCCONF_FOC_SENSOR_MODE			FOC_SENSOR_MODE_SENSORLESS//FOC_SENSOR_MODE_HALL
 #endif
 #ifndef MCCONF_FOC_PLL_KP
 #define MCCONF_FOC_PLL_KP				2000.0

@@ -1,4 +1,6 @@
 obj/*
 .vscode/*
 .settings/*
-
+!obj/*.hex
+!obj/*.map
+!obj/makefile

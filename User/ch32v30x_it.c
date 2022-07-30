@@ -1,33 +1,19 @@
 /********************************** (C) COPYRIGHT *******************************
- * File Name          : ch32v30x_it.c
- * Author             : WCH
- * Version            : V1.0.0
- * Date               : 2021/06/06
- * Description        : Main Interrupt Service Routines.
- * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
- * SPDX-License-Identifier: Apache-2.0
- *******************************************************************************/
+* File Name          : ch32v30x_it.c
+* Author             : WCH
+* Version            : V1.0.0
+* Date               : 2021/06/06
+* Description        : Main Interrupt Service Routines.
+* Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
+* SPDX-License-Identifier: Apache-2.0
+*******************************************************************************/
 #include "ch32v30x_it.h"
-
-#include "ch32v30x_misc.h"
-#include "ch32v30x_rcc.h"
-#include "ch32v30x_gpio.h"
-#include "ch32v30x_tim.h"
-#include "ch32v30x_dma.h"
-#include "ch32v30x_can.h"
-
-#include "hw.h"
-#include "can.h"
-#include "mc_interface.h"
 #include "mcpwm_foc.h"
-
 void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void DMA1_Channel1_IRQHandler(void)   __attribute__((interrupt("WCH-Interrupt-fast")));
-//void DMA2_Channel10_IRQHandler(void)   __attribute__((interrupt("WCH-Interrupt-fast")));
-//void UART8_IRQHandler(void)   __attribute__((interrupt("WCH-Interrupt-fast")));
-void USB_LP_CAN1_RX0_IRQHandler(void)   __attribute__((interrupt("WCH-Interrupt-fast")));
+
 /*********************************************************************
  * @fn      NMI_Handler
  *
@@ -48,11 +34,11 @@ void NMI_Handler(void)
  */
 void HardFault_Handler(void)
 {
-    while (1)
-    {
-    }
+  while (1)
+  {
+  }
 }
-//static volatile uint8_t debug = 0;
+
 void TIM2_IRQHandler(void)
 {
     if(TIM_GetITStatus(TIM2, TIM_IT_CC2)==SET)
@@ -71,65 +57,8 @@ void DMA1_Channel1_IRQHandler()
     if(DMA_GetITStatus(DMA1_IT_TC1)==SET ){
         DMA_ClearITPendingBit(DMA1_IT_TC1);
 
-        //mcpwm_foc_adc_int_handler();
+        mcpwm_foc_adc_int_handler();
+
         GPIO_ResetBits(GPIOE, GPIO_Pin_1);
-
-#if 0
-        printf("ADC 0~3 %d, %d, %d, %d\n",Get_ConversionVal1(ADC_Value[0]), Get_ConversionVal2(ADC_Value[2]), Get_ConversionVal1(ADC_Value[4]), Get_ConversionVal2(ADC_Value[6]));
-        printf("ADC 4~7 %d, %d, %d, %d\n",Get_ConversionVal1(ADC_Value[8]), Get_ConversionVal2(ADC_Value[1]), Get_ConversionVal1(ADC_Value[3]), Get_ConversionVal2(ADC_Value[5]));
-        printf("ADC 8~9 %d, %d\n",Get_ConversionVal1(ADC_Value[7]), Get_ConversionVal2(ADC_Value[9]));
-#endif
-    }
-}
-//void DMA2_Channel10_IRHandler()
-//{
-//    if(DMA_GetITStatus(DMA2_IT_TC10)==SET ){
-//        DMA_ClearITPendingBit(DMA2_IT_TC10);
-//        BLE_TRANSPARENT_MODE();
-//    }
-//}
-//void UART8_IRQHandler(void){
-//    //if(USART_GetITStatus(UART8, USART_IT_IDLE)!=RESET){
-//
-//        if(USART_GetFlagStatus(UART8, USART_FLAG_IDLE)==SET){
-//            USART_ClearFlag(UART8, USART_FLAG_IDLE);
-//            USART_ITConfig(UART8, USART_IT_IDLE, DISABLE);
-//            ble_rx_buffer_index = 16;//128 - DMA_GetCurrDataCounter(DMA2_Channel11);
-//            //DMA_SetCurrDataCounter(DMA2_Channel11, 256);
-//        }
-//        //USART_ClearITPendingBit(UART8, USART_IT_IDLE);
-//
-//        //DMA_Cmd( DMA2_Channel11, DISABLE );
-//        //USART_ITConfig(UART8, USART_IT_IDLE, DISABLE);
-//        //ble_idle_flag = 1;//128 - DMA_GetCurrDataCounter(DMA2_Channel11);
-//
-//    //}
-//}
-
-void USB_LP_CAN1_RX0_IRQHandler(){
-//    u8 rx,i;
-    //    u8 rxbuf[8];
-    //
-    if( CAN_GetITStatus( CAN1, CAN_IT_FMP0 ) != RESET )
-    {
-        CanRxMsg canRxStructure;
-        CAN_Receive( CAN1, CAN_FIFO0, &canRxStructure );
-        if(canRxStructure.StdId == 0x017){
-            if(can_rx_payload.finished == 0){
-                for(uint8_t i=0; i<canRxStructure.DLC; i++ )
-                {
-                    can_rx_payload.buffer[i] = canRxStructure.Data[i];
-                }
-                can_rx_payload.length = can_rx_payload.length + canRxStructure.DLC;
-            }
-        }
-        else if(canRxStructure.StdId == 0x018){
-            uint16_t len = ((uint16_t)canRxStructure.Data[0] << 8) + (uint16_t)canRxStructure.Data[1];
-            if(can_rx_payload.length == len){
-                can_rx_payload.finished = 1;
-            }
-        }
-
-        CAN_ClearITPendingBit( CAN1, CAN_IT_FMP0 );
     }
 }
