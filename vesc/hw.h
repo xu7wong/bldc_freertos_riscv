@@ -92,13 +92,13 @@
 #define VIN_R2                  2200.0
 #endif
 #ifndef CURRENT_AMP_GAIN
-#define CURRENT_AMP_GAIN        45.0
+#define CURRENT_AMP_GAIN        32.5
 #endif
-#ifndef CURRENT_SHUNT_RES
-#define CURRENT_SHUNT_RES       0.0003
-#endif
+//#ifndef CURRENT_SHUNT_RES
+//#define CURRENT_SHUNT_RES       0.0003
+//#endif
 
-#define FAC_CURRENT                 ((V_REG / 4095.0) / (CURRENT_SHUNT_RES * CURRENT_AMP_GAIN))
+#define FAC_CURRENT                 ((V_REG / 4095.0) * CURRENT_AMP_GAIN)// / (CURRENT_SHUNT_RES * CURRENT_AMP_GAIN))
 
 #ifndef V12V_R1
 #define V12V_R1                  27000.0
@@ -108,12 +108,12 @@
 #endif
 
 // Input voltage
-#define GET_INPUT_VOLTAGE()     ((V_REG / 4095.0) * (float)ADC_Value[ADC_IND_VIN_SENS] * ((VIN_R1 + VIN_R2) / VIN_R2))
-#define GET_12V_VOLTAGE()     ((V_REG / 4095.0) * (float)ADC_Value[ADC_IND_V12V] * ((V12V_R1 + V12V_R2) / V12V_R2))
+#define GET_INPUT_VOLTAGE()     ((V_REG / 4095.0) * (float)Get_ConversionVal2(ADC_Value[ADC_IND_VIN_SENS]) * ((VIN_R1 + VIN_R2) / VIN_R2))
+#define GET_12V_VOLTAGE()     ((V_REG / 4095.0) * (float)Get_ConversionVal2(ADC_Value[ADC_IND_V12V]) * ((V12V_R1 + V12V_R2) / V12V_R2))
 
-#define ADC_V_L1                ADC_Value[ADC_IND_SENS1]
-#define ADC_V_L2                ADC_Value[ADC_IND_SENS2]
-#define ADC_V_L3                ADC_Value[ADC_IND_SENS3]
+#define ADC_V_L1                Get_ConversionVal1(ADC_Value[ADC_IND_SENS1])
+#define ADC_V_L2                Get_ConversionVal1(ADC_Value[ADC_IND_SENS2])
+#define ADC_V_L3                Get_ConversionVal1(ADC_Value[ADC_IND_SENS3])
 
 // #ifndef ADC_V_L4
 // #define ADC_V_L4             ADC_V_L1
@@ -137,15 +137,15 @@
 #endif
 
 #ifndef GET_CURRENT1
-#define GET_CURRENT1()      ADC_Value[ADC_IND_CURR1]
+#define GET_CURRENT1()      Get_ConversionVal2(ADC_Value[ADC_IND_CURR1])
 #endif
 
 #ifndef GET_CURRENT2
-#define GET_CURRENT2()      ADC_Value[ADC_IND_CURR2]
+#define GET_CURRENT2()      Get_ConversionVal2(ADC_Value[ADC_IND_CURR2])
 #endif
 
 #ifndef GET_CURRENT3
-#define GET_CURRENT3()      ADC_Value[ADC_IND_CURR3]
+#define GET_CURRENT3()      Get_ConversionVal2(ADC_Value[ADC_IND_CURR3])
 #endif
 
 #ifndef ADC_VOLTS_PH_FACTOR
@@ -155,7 +155,7 @@
 #define ADC_VOLTS_INPUT_FACTOR  1.0
 #endif
 
-#define ADC_VOLTS(ch)           ((float)ADC_Value[ch] / 4096.0 * V_REG)
+#define ADC_VOLTS(ch)           ((float)Get_ConversionVal1(ADC_Value[ch]) / 4096.0 * V_REG)
 // #define ADC_V_ZERO               (ADC_Value[ADC_IND_VIN_SENS] / 2)
 
 
@@ -167,7 +167,7 @@
 #define LED2_OFF() GPIO_ResetBits(GPIOE, GPIO_Pin_1)
 
 
-
+#define DEFAULT_ADC_SAMPLE_TIME ADC_SampleTime_13Cycles5
 
 //extern uint16_t ADC_Value[HW_ADC_CHANNELS];
 extern int16_t Calibrattion_Val1;

@@ -402,9 +402,9 @@ void mc_interface_set_current(float current) {
 		// SHUTDOWN_RESET();
 	}
 
-	//if (mc_interface_try_input()) {
-	//	return;
-	//}
+	if (mc_interface_try_input()) {
+		return;
+	}
 
 	switch (motor_now()->m_conf.motor_type) {
 

@@ -40,7 +40,7 @@ void hw_init_gpio(void){
 
     /* TIM10_CH1/CH2/CH3 or Hall sensor input x3 */
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_11 | GPIO_Pin_13;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;//GPIO_Mode_IPU; Use external pull-up
     GPIO_Init(GPIOD, &GPIO_InitStructure);
 
     /* TIM1_CH1 */
@@ -170,8 +170,8 @@ void hw_init_gpio(void){
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
     GPIO_Init(GPIOE, &GPIO_InitStructure);
-    LED1_OFF();
-    LED2_OFF();
+    LED1_ON();
+    LED2_ON();
 
 //    BLE_AT_MODE();
 }
@@ -198,25 +198,25 @@ uint16_t Get_ConversionVal2(int16_t val)
 }
 
 void hw_setup_adc_channels(void){
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_2, 1, ADC_SampleTime_7Cycles5 ); //0, VS1
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_2, 1, DEFAULT_ADC_SAMPLE_TIME ); //0, VS1
 
-    ADC_RegularChannelConfig(ADC2, ADC_Channel_5, 1, ADC_SampleTime_7Cycles5 ); //1, CS1
+    ADC_RegularChannelConfig(ADC2, ADC_Channel_5, 1, DEFAULT_ADC_SAMPLE_TIME ); //1, CS1
 
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_3, 2, ADC_SampleTime_7Cycles5 ); //2, VS2
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_3, 2, DEFAULT_ADC_SAMPLE_TIME ); //2, VS2
 
-    ADC_RegularChannelConfig(ADC2, ADC_Channel_6, 2, ADC_SampleTime_7Cycles5 ); //3, CS2
+    ADC_RegularChannelConfig(ADC2, ADC_Channel_6, 2, DEFAULT_ADC_SAMPLE_TIME ); //3, CS2
 
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 3, ADC_SampleTime_7Cycles5 ); //4, VS3
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 3, DEFAULT_ADC_SAMPLE_TIME ); //4, VS3
 
-    ADC_RegularChannelConfig(ADC2, ADC_Channel_7, 3, ADC_SampleTime_7Cycles5 ); //5, CS3
+    ADC_RegularChannelConfig(ADC2, ADC_Channel_7, 3, DEFAULT_ADC_SAMPLE_TIME ); //5, CS3
 
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_8, 4, ADC_SampleTime_7Cycles5 ); //6 ADC_Vin
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_8, 4, DEFAULT_ADC_SAMPLE_TIME ); //6 ADC_Vin
 
-    ADC_RegularChannelConfig(ADC2, ADC_Channel_9, 4, ADC_SampleTime_7Cycles5 ); //7 ADC_EXT
+    ADC_RegularChannelConfig(ADC2, ADC_Channel_9, 4, DEFAULT_ADC_SAMPLE_TIME ); //7 ADC_EXT
 
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 5, ADC_SampleTime_7Cycles5 ); //8 ADC_V12V
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 5, DEFAULT_ADC_SAMPLE_TIME ); //8 ADC_V12V
 
-    ADC_RegularChannelConfig(ADC2, ADC_Channel_10, 5, ADC_SampleTime_7Cycles5 );//9 Motor Temperature
+    ADC_RegularChannelConfig(ADC2, ADC_Channel_10, 5, DEFAULT_ADC_SAMPLE_TIME );//9 Motor Temperature
 }
 
 

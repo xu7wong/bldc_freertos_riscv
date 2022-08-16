@@ -43,22 +43,23 @@ void TIM2_IRQHandler(void)
 {
     if(TIM_GetITStatus(TIM2, TIM_IT_CC2)==SET)
     {
-        TIM_ClearITPendingBit(TIM2, TIM_IT_CC2);
+
 
         mcpwm_foc_tim_sample_int_handler();
 
-        GPIO_SetBits(GPIOE, GPIO_Pin_1);
-
+        GPIO_SetBits(GPIOE, GPIO_Pin_0);
+        TIM_ClearITPendingBit(TIM2, TIM_IT_CC2);
     }
 }
 
 void DMA1_Channel1_IRQHandler()
 {
     if(DMA_GetITStatus(DMA1_IT_TC1)==SET ){
-        DMA_ClearITPendingBit(DMA1_IT_TC1);
+
 
         mcpwm_foc_adc_int_handler();
 
-        GPIO_ResetBits(GPIOE, GPIO_Pin_1);
+        GPIO_ResetBits(GPIOE, GPIO_Pin_0);
+        DMA_ClearITPendingBit(DMA1_IT_TC1);
     }
 }

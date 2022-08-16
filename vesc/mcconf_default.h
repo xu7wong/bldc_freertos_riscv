@@ -28,7 +28,7 @@
 #define MCCONF_PWM_MODE					PWM_MODE_SYNCHRONOUS // Default PWM mode
 #endif
 #ifndef MCCONF_SENSOR_MODE
-#define MCCONF_SENSOR_MODE				SENSOR_MODE_SENSORLESS//SENSOR_MODE_SENSORED // Sensor mode
+#define MCCONF_SENSOR_MODE				SENSOR_MODE_SENSORLESS //SENSOR_MODE_SENSORED // Sensor mode //
 #endif
 #ifndef MCCONF_COMM_MODE
 #define MCCONF_COMM_MODE				COMM_MODE_INTEGRATE	// The commutation mode to use
@@ -249,7 +249,7 @@
 #define MCCONF_FOC_CURRENT_KI			50.0
 #endif
 #ifndef MCCONF_FOC_F_ZV
-#define MCCONF_FOC_F_ZV					25000.0
+#define MCCONF_FOC_F_ZV					21000.0
 #endif
 #ifndef MCCONF_FOC_DT_US
 #define MCCONF_FOC_DT_US				0.12 // Microseconds for dead time compensation

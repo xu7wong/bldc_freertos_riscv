@@ -310,7 +310,7 @@ static void timer_reinit(int f_zv){
     TIM_ITConfig(TIM2, TIM_IT_CC2, ENABLE);
     NVIC_InitTypeDef NVIC_InitStructure = {0};
     NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 5;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
@@ -415,7 +415,7 @@ void mcpwm_foc_init(volatile mc_configuration *conf_m1, volatile mc_configuratio
     DMA_Init( DMA1_Channel1, &DMA_InitStructure );
 
     NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel1_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 3;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 6;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
@@ -515,7 +515,7 @@ void mcpwm_foc_adc_int_handler(void) {
     if (++skip == FOC_CONTROL_LOOP_FREQ_DIVIDER) {
         skip = 0;
     } else {
-        return;
+        //return;
     }
 
     // uint32_t t_start = timer_time_now();
@@ -562,7 +562,7 @@ void mcpwm_foc_adc_int_handler(void) {
 #ifndef HW_HAS_DUAL_MOTORS
 #ifdef HW_HAS_PHASE_SHUNTS
     if (!conf_now->foc_sample_v0_v7 && is_v7) {
-        return;
+        //return;
     }
 #else
     if (is_v7) {
